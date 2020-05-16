@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+// This function will create a square button for the Tic Tac Toe game
 function Square(props) {
     return (
       // alert('click'): show a dialog box that says 'click' when clicked
@@ -15,6 +16,7 @@ function Square(props) {
     );
   }
 
+// This will create a board of squares
 class Board extends React.Component {
 
   renderSquare(i) {
@@ -26,6 +28,7 @@ class Board extends React.Component {
     );
   }
 
+// This changed from hardcoded rows and columns to two loops (3x3)
   render() {
       // Use two loops to make the squares
       const boardSize = 3;
@@ -43,6 +46,7 @@ class Board extends React.Component {
   }
 }
 
+// This will be the composite of Board and rules of Tic-Tac-Toe
 class Game extends React.Component {
   constructor(props)  {
     super(props);
@@ -51,10 +55,12 @@ class Game extends React.Component {
         squares: Array(9).fill(null)
       }],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      isAscending: true
     };
   }
 
+// When clicking on a square, X or O will be added
   handleClick(i)  {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
@@ -73,10 +79,18 @@ class Game extends React.Component {
     });
   }
 
+// When selecting a button, it will jump to that particular step
   jumpTo(step)  {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
+    });
+  }
+
+// This will determine the toggle whether descending or ascending
+  handleSortToggle()  {
+    this.setState({
+      isAscending: !this.state.isAscending
     });
   }
 
@@ -85,8 +99,8 @@ class Game extends React.Component {
     const stepNumber = this.state.stepNumber;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
-
-    const moves = history.map((step, move) => {
+    // changes const to let to account for isAscending
+    let moves = history.map((step, move) => {
       const latestMove = step.recentMove;
       const col = (latestMove % 3) + 1;
       const row = Math.floor(latestMove / 3) + 1;
@@ -102,6 +116,12 @@ class Game extends React.Component {
         </li>
       );
     });
+
+    const isAscending = this.state.isAscending;
+    // Changes order of moves when toggled
+    if (!isAscending) {
+      moves.reverse();
+    }
 
     let status;
     if (winner) {
@@ -120,6 +140,9 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <button onClick={() => this.handleSortToggle()}>
+            {isAscending ? 'descending' : 'ascending'}
+          </button>
           <ol>{moves}</ol>
         </div>
       </div>
